@@ -24,11 +24,11 @@ include(ExternalProject)
 
 set(BRPC_ROOT ${CMAKE_BINARY_DIR}/third_party/brpc)
 set(BRPC_GIT_TAG  master)  # 指定版本
-set(BRPC_GIT_URL https://github.com/acmol/brpc.git)  # 指定git仓库地址
+set(BRPC_GIT_URL https://github.com/apache/brpc.git)  # 指定git仓库地址
 
 #
 set(BRPC_CONFIGURE    cd ${BRPC_ROOT}/src/BRPC && sh config_brpc.sh --with-glog --headers=${CMAKE_BINARY_DIR}/ --libs=${CMAKE_BINARY_DIR}/)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
-set(BRPC_MAKE         cd ${BRPC_ROOT}/src/BRPC/ && make -j 8)  # 指定编译指令（需要覆盖默认指令，进入我们指定的BRPC_ROOT目录下）
+set(BRPC_MAKE         cd ${BRPC_ROOT}/src/BRPC/ && make)  # 指定编译指令（需要覆盖默认指令，进入我们指定的BRPC_ROOT目录下）
 set(BRPC_INSTALL      cd ${BRPC_ROOT}/src/BRPC)  # 指定安装指令（需要覆盖默认指令，进入我们指定的BRPC_ROOT目录下,可以copy 出来
 
 ExternalProject_Add(BRPC

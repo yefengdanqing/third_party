@@ -8,7 +8,7 @@ set(LEVELDB_GIT_URL https://github.com/google/leveldb.git)  # 指定git仓库地
 
 #
 set(LEVELDB_ROOT ${CMAKE_BINARY_DIR}/third_party/leveldb)
-set(LEVELDB_CONFIGURE    cd ${LEVELDB_ROOT}/src/LEVELDB && rm -fr build && mkdir build && cd build && CXXFLAGS=-fPIC cmake .. -DCMAKE_INSTALL_PREFIX=${LEVELDB_ROOT})  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
+set(LEVELDB_CONFIGURE    cd ${LEVELDB_ROOT}/src/LEVELDB && rm -fr build && mkdir build && cd build && CXXFLAGS=-fPIC cmake .. -DCMAKE_INSTALL_PREFIX=${LEVELDB_ROOT} -DBUILD_SHARED_LIBS=ON)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
 set(LEVELDB_MAKE         cd ${LEVELDB_ROOT}/src/LEVELDB/build && CC=gcc CXX=g++ CXXFLAGS=-fPIC make -j 8)  # 指定编译指令（需要覆盖默认指令，进入我们指定的LEVELDB_ROOT目录下）
 set(LEVELDB_INSTALL      cd ${LEVELDB_ROOT}/src/LEVELDB/build && make install)  # 指定安装指令（需要覆盖默认指令，进入我们指定的LEVELDB_ROOT目录下,可以copy 出来
 
@@ -20,7 +20,7 @@ ExternalProject_Add(LEVELDB
         BUILD_COMMAND     ${LEVELDB_MAKE}
         INSTALL_COMMAND   ${LEVELDB_INSTALL}
         CMAKE_ARGS          -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-                            -DBUILD_STATIC_LIBS=ON
+                            -DBUILD_SHARED_LIBS=ON
 			    -DBUILD_TESTING=ON
 			    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 )
@@ -34,6 +34,6 @@ include_directories(${LEVELDB_INCLUDE_DIR})
 link_directories(${LEVELDB_LIB_DIR})
 
 ADD_LIBRARY(leveldb STATIC IMPORTED GLOBAL)
-SET_PROPERTY(TARGET leveldb PROPERTY IMPORTED_LOCATION ${LEVELDB_LIB_DIR}/libleveldb.a)
+SET_PROPERTY(TARGET leveldb PROPERTY IMPORTED_LOCATION ${LEVELDB_LIB_DIR}/libleveldb.so)
 add_dependencies(leveldb LEVELDB)
 # add_dependencies(leveldb leveldb::leveldb)

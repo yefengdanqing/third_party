@@ -42,9 +42,8 @@ ExternalProject_Add(PROTOBUF
 set(PROTOBUF_LIB_DIR       ${PROTOBUF_ROOT}/lib64)
 # 指定头文件所在的目录
 set(PROTOBUF_INCLUDE_DIR   ${PROTOBUF_ROOT}/include)
-set(PROTOBUF_BIN_DIR ${PROTOBUF_ROOT}/bin)
-
-set(PBUF_PROTOC ${PROTOBUF_BIN_DIR}/protoc)
+set(PROTOBUF_BIN_DIR       ${PROTOBUF_ROOT}/bin)
+set(PBUF_PROTOC            ${PROTOBUF_BIN_DIR}/protoc)
 
 message("skt lib64: ${PROTOBUF_LIB_DIR}")
 include_directories(${PROTOBUF_INCLUDE_DIR})
