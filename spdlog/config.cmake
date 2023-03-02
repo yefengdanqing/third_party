@@ -15,7 +15,7 @@ message("start compile spdlog")
 set(SPDLOG_ROOT ${CMAKE_BINARY_DIR}/third_party/spdlog)
 set(SPDLOG_GIT_TAG  v1.4.1)  # 指定版本
 set(SPDLOG_GIT_URL      https://github.com/gabime/spdlog.git)  # 指定git仓库地址
-set(SPDLOG_CONFIGURE    cd ${SPDLOG_ROOT}/src/SDPLOG && cmake -D CMAKE_INSTALL_PREFIX=${SPDLOG_ROOT} .)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
+set(SPDLOG_CONFIGURE    cd ${SPDLOG_ROOT}/src/SDPLOG && cmake -DCMAKE_INSTALL_PREFIX=${SPDLOG_ROOT} .)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
 set(SPDLOG_MAKE         cd ${SPDLOG_ROOT}/src/SDPLOG && make)  # 指定编译指令（需要覆盖默认指令，进入我们指定的SPDLOG_ROOT目录下）
 set(SPDLOG_INSTALL      cd ${SPDLOG_ROOT}/src/SDPLOG && make install)  # 指定安装指令（需要覆盖默认指令，进入我们指定的SPDLOG_ROOT目录下）
 #为啥一定是大写呢

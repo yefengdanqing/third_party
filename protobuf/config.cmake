@@ -1,30 +1,25 @@
-# include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
+set(CMAKE_CXX_STANDARD 17)
 
-# # include(${CMAKE_CURRENT_LIST_DIR}/../fmt/config.cmake)
 
 # include(FetchContent)
 # set(FETCHCONTENT_QUIET FALSE)
 # FetchContent_Declare(
-#         protobuf-git
-#         GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-#         GIT_TAG        main
-#         SOURCE_SUBDIR  cmake
-#         GIT_PROGRESS   TRUE
+#     Protobuf
+#     GIT_REPOSITORY https://github.com/protocolbuffers/protobuf
+#     GIT_TAG        v21.12 
+#     SOURCE_SUBDIR  cmake
 # )
-# FetchContent_MakeAvailable(protobuf-git)
-
-
-# include_directories(${Protobuf_INCLUDE_DIRS})
+# FetchContent_MakeAvailable(Protobuf)
+# FetchContent_GetProperties(Protobuf SOURCE_DIR Protobuf_SOURCE_DIR)
+# # Include the script which defines 'protobuf_generate'
+# include_directories(${protobuf_INCLUDE_DIRS})
 # include_directories(${CMAKE_CURRENT_BINARY_DIR})
+# message("protobuf dir ${protobuf_INCLUDE_DIRS} ${protobuf_INCLUDE_DIRS}")
 
-
-# message("protobuf dir ${protobuf_INCLUDE_DIRS} ${Protobuf_INCLUDE_DIRS}")
-
-set(CMAKE_CXX_STANDARD 17)
 
 
 include(ExternalProject)
-
 set(PROTOBUF_ROOT ${CMAKE_BINARY_DIR}/third_party/protobuf)
 set(PROTOBUF_GIT_TAG  v3.21.3)  # 指定版本
 set(PROTOBUF_GIT_URL  https://github.com/protocolbuffers/protobuf.git)  # 指定git仓库地址
@@ -54,3 +49,8 @@ set(PBUF_PROTOC ${PROTOBUF_BIN_DIR}/protoc)
 message("skt lib64: ${PROTOBUF_LIB_DIR}")
 include_directories(${PROTOBUF_INCLUDE_DIR})
 LINK_DIRECTORIES(${PROTOBUF_LIB_DIR})
+
+ADD_LIBRARY(protobuf STATIC IMPORTED GLOBAL)
+SET_PROPERTY(TARGET protobuf PROPERTY IMPORTED_LOCATION ${PROTOBUF_LIB_DIR}/libprotobuf.a)
+#SET_PROPERTY(TARGET protobuf PROPERTY IMPORTED_LOCATION ${PROTOBUF_LIB_DIR}/libprotoc.a)
+add_dependencies(protobuf PROTOBUF)
