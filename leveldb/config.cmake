@@ -1,14 +1,14 @@
 
 
 include(ExternalProject)
-
+set(THIRD_PARTY_PREFIX ${CMAKE_BINARY_DIR}/third_party)
 set(LEVELDB_ROOT ${CMAKE_BINARY_DIR}/third_party/leveldb)
 set(LEVELDB_GIT_TAG  main)  # 指定版本
 set(LEVELDB_GIT_URL https://github.com/google/leveldb.git)  # 指定git仓库地址
 
 #
 set(LEVELDB_ROOT ${CMAKE_BINARY_DIR}/third_party/leveldb)
-set(LEVELDB_CONFIGURE    cd ${LEVELDB_ROOT}/src/LEVELDB && rm -fr build && mkdir build && cd build && CXXFLAGS=-fPIC cmake .. -DCMAKE_INSTALL_PREFIX=${LEVELDB_ROOT} -DBUILD_SHARED_LIBS=ON)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
+set(LEVELDB_CONFIGURE    cd ${LEVELDB_ROOT}/src/LEVELDB && rm -fr build && mkdir build && cd build && CXXFLAGS=-fPIC cmake .. -DCMAKE_INSTALL_PREFIX=${LEVELDB_ROOT} -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_SHARED_LIBS=ON) # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
 set(LEVELDB_MAKE         cd ${LEVELDB_ROOT}/src/LEVELDB/build && CC=gcc CXX=g++ CXXFLAGS=-fPIC make -j 8)  # 指定编译指令（需要覆盖默认指令，进入我们指定的LEVELDB_ROOT目录下）
 set(LEVELDB_INSTALL      cd ${LEVELDB_ROOT}/src/LEVELDB/build && make install)  # 指定安装指令（需要覆盖默认指令，进入我们指定的LEVELDB_ROOT目录下,可以copy 出来
 
@@ -26,7 +26,7 @@ ExternalProject_Add(LEVELDB
 )
 
 # 指定编译好的静态库文件的路径
-set(LEVELDB_LIB_DIR       ${LEVELDB_ROOT}/lib64)
+set(LEVELDB_LIB_DIR       ${LEVELDB_ROOT}/lib)
 # 指定头文件所在的目录
 set(LEVELDB_INCLUDE_DIR   ${LEVELDB_ROOT}/include)
 
@@ -37,3 +37,11 @@ ADD_LIBRARY(leveldb STATIC IMPORTED GLOBAL)
 SET_PROPERTY(TARGET leveldb PROPERTY IMPORTED_LOCATION ${LEVELDB_LIB_DIR}/libleveldb.so)
 add_dependencies(leveldb LEVELDB)
 # add_dependencies(leveldb leveldb::leveldb)
+
+# add_custom_command(TARGET extern_leveldb POST_BUILD
+#     COMMAND mkdir -p third_party/lib/
+#     COMMAND mkdir -p third_party/include/
+#     COMMAND cp -r ${LEVELDB_DOWNLOAD_DIR}/leveldb/include/* ${LEVELDB_INSTALL_DIR}/include/
+#     COMMAND cp -r ${LEVELDB_DOWNLOAD_DIR}/leveldb/out-static/lib* ${LEVELDB_INSTALL_DIR}/lib/
+#     COMMAND cp -r ${LEVELDB_DOWNLOAD_DIR}/leveldb/out-shared/lib* ${LEVELDB_INSTALL_DIR}/lib/
+# )

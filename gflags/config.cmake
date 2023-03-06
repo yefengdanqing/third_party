@@ -67,7 +67,7 @@
 
 
 include(ExternalProject)
-
+set(THIRD_PARTY_PREFIX ${CMAKE_BINARY_DIR}/third_party)
 set(GFLAGS_INSTALL_DIR "${PROJECT_BINARY_DIR}/third_party/gflags")
 set(GFLAGS_INCLUDE_DIR "${GFLAGS_INSTALL_DIR}/include" CACHE PATH "gflags include directory." FORCE)
 set(GFLAGS_LIBRARIES "${GFLAGS_INSTALL_DIR}/lib/libgflags.a" CACHE FILEPATH "GFLAGS_LIBRARIES" FORCE)
@@ -75,14 +75,14 @@ set(GFLAGS_LIBRARIES "${GFLAGS_INSTALL_DIR}/lib/libgflags.a" CACHE FILEPATH "GFL
 set(GFLAGS_ROOT ${CMAKE_BINARY_DIR}/third_party/gflags)
 set(GFLAGS_GIT_TAG  master)  # 指定版本
 set(GFLAGS_GIT_URL https://github.com/gflags/gflags.git)  # 指定git仓库地址
-
+set(THIRD_PARTY_PREFIX ${CMAKE_BINARY_DIR}/third_party)
 #
-# set(GFLAGS_CONFIGURE    cd ${GFLAGS_ROOT}/src/GFLAGS && rm -fr build && mkdir build && cd build && CXXFLAGS=-fPIC cmake .. -DCMAKE_INSTALL_PREFIX=${GFLAGS_ROOT})  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
+set(GFLAGS_CONFIGURE    cd ${GFLAGS_ROOT}/src/GFLAGS && rm -fr build && mkdir build && cd build && CXXFLAGS=-fPIC cmake .. -DCMAKE_INSTALL_PREFIX=${GFLAGS_ROOT} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
 # set(GFLAGS_MAKE         cd ${GFLAGS_ROOT}/src/GFLAGS/build && CC=gcc CXX=g++ CXXFLAGS=-fPIC make -j 8)  # 指定编译指令（需要覆盖默认指令，进入我们指定的GFLAGS_ROOT目录下）
 # set(GFLAGS_INSTALL      cd ${GFLAGS_ROOT}/src/GFLAGS && cd build && make install)  # 指定安装指令（需要覆盖默认指令，进入我们指定的GFLAGS_ROOT目录下,可以copy 出来
 
 
-set(GFLAGS_CONFIGURE    cd ${GFLAGS_ROOT}/src/GFLAGS && rm -fr build && mkdir build && cd build && CC=gcc CXX=g++ CXXFLAGS=-fPIC cmake .. -DCMAKE_INSTALL_PREFIX=${GFLAGS_ROOT} -DBUILD_SHARED_LIBS=ON)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
+#set(GFLAGS_CONFIGURE    cd ${GFLAGS_ROOT}/src/GFLAGS && rm -fr build && mkdir build && cd build && CC=gcc CXX=g++ CXXFLAGS=-fPIC cmake .. -DCMAKE_INSTALL_PREFIX=${THIRD_PARTY_PREFIX} -DBUILD_SHARED_LIBS=ON)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
 set(GFLAGS_MAKE         cd ${GFLAGS_ROOT}/src/GFLAGS/build && CC=gcc CXX=g++ CXXFLAGS=-fPIC make)  # 指定编译指令（需要覆盖默认指令，进入我们指定的GFLAGS_ROOT目录下）
 set(GFLAGS_INSTALL      cd ${GFLAGS_ROOT}/src/GFLAGS && cd build && make install)  # 指定安装指令（需要覆盖默认指令，进入我们指定的GFLAGS_ROOT目录下,可以copy 出来
 
@@ -97,7 +97,7 @@ ExternalProject_Add(GFLAGS
         # LOG_CONFIGURE     1
         # LOG_INSTALL       1
         CMAKE_ARGS          -DBUILD_SHARED_LIBS=ON
-			    -DBUILD_TESTING=ON
+			    -DBUILD_TESTING=OFF
 			    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 			    -DCMAKE_INSTALL_PREFIX=${GFLAGS_INSTALL_DIR}
 )
@@ -108,13 +108,13 @@ set(GFLAGS_LIB_DIR       ${GFLAGS_ROOT}/lib)
 set(GFLAGS_INCLUDE_DIR   ${GFLAGS_ROOT}/include)
 
 message("skt lib64: ${GFLAGS_LIB_DIR}")
-include_directories(${GFLAGS_INCLUDE_DIR})
-include_directories(${GFLAGS_ROOT}/src/GFLAGS/build)
 link_directories(${GFLAGS_LIB_DIR})
+include_directories(${GFLAGS_INCLUDE_DIR})
 
 
 
 ADD_LIBRARY(gflags SHARED IMPORTED GLOBAL)
 SET_PROPERTY(TARGET gflags PROPERTY IMPORTED_LOCATION ${GFLAGS_LIB_DIR}/libgflags.so)
+#SET_PROPERTY(TARGET gflags PROPERTY IMPORTED_LOCATION ${GFLAGS_LIB_DIR}/libgflags.a)
 add_dependencies(gflags GFLAGS)
 

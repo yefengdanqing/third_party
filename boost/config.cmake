@@ -1,5 +1,6 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 
+set(THIRD_PARTY_PREFIX ${CMAKE_BINARY_DIR}/third_party)
 set(BOOST_INCLUDE_LIBRARIES thread filesystem system)
 set(BOOST_ENABLE_CMAKE ON)
 set(FETCHCONTENT_QUIET FALSE)

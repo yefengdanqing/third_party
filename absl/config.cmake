@@ -1,7 +1,9 @@
 INCLUDE(ExternalProject)
 
+set(THIRD_PARTY_PREFIX ${CMAKE_BINARY_DIR}/third_party)
 set(ABSL_INSTALL_DIR "${PROJECT_BINARY_DIR}/third_party/absl")
 set(ABSL_INCLUDE_DIR "${ABSL_INSTALL_DIR}/include" CACHE PATH "absl include directory." FORCE)
+
 set(ABSL_LIBRARIES   "${ABSL_INSTALL_DIR}/lib/libabsl_bad_any_cast_impl.a"
                 "${ABSL_INSTALL_DIR}/lib/libabsl_strings.a"
                 "${ABSL_INSTALL_DIR}/lib/libabsl_strings_internal.a"
