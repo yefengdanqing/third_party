@@ -35,6 +35,9 @@ function(thirdparty_in_fetchcontent)
     message("thirdparty_in_fetchcontent")
 endfunction(thirdparty_in_fetchcontent)
 
+
+
+#generate pb.h
 function(CUSTOM_PROTOBUF_GENERATE_CPP SRCS HDRS)
     message("CUSTOM_PROTOBUF_GENERATE_CPP")
     if(NOT ARGN)
@@ -64,15 +67,15 @@ function(CUSTOM_PROTOBUF_GENERATE_CPP SRCS HDRS)
         list(APPEND ${HDRS} "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.h")
 
         #execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR})
-        set(test_proto_path /home/kaitao.song/cpp_freshman/proto)
+        set(test_proto_path ${PROJECT_SOURCE_DIR}/proto)
 
         message("CUSTOM_PROTOBUF_GENERATE_CPP-all ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.cc  ${PBUF_PROTOC} ${_protobuf_include_path}")
-        message("skt other path [${ABS_FIL} ${protocol_protobuf} ${test_proto_path}]")
+        message("skt other path [${ABS_FIL} ${protocol_protobuf}]")
 
         add_custom_command(
             OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.cc"
              "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.h"
-            COMMAND ${PBUF_PROTOC} -I ${test_proto_path} --cpp_out ${protocol_protobuf} ${ABS_FIL}
+            COMMAND ${PBUF_PROTOC} -I ${PROJECT_SOURCE_DIR}/proto --cpp_out ${protocol_protobuf} ${ABS_FIL}
             DEPENDS ${ABS_FIL}
             COMMENT "Running C++ protocol buffer compiler on ${FIL}"
             VERBATIM)

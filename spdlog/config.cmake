@@ -1,17 +1,21 @@
 # include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
+set(THIRD_PARTY_PREFIX ${CMAKE_BINARY_DIR}/third_party)
 
 
 # include(FetchContent)
 
 # FetchContent_Declare(spdlog
 #         GIT_REPOSITORY https://gitee.com/mai12/spdlog.git
-#         GIT_TAG v1.4.1)
+#         GIT_TAG v1.4.1
+        # SOURCE_DIR ${FMT_ROOT}
+        # BINARY_DIR ${FMT_ROOT})
 
 # FetchContent_MakeAvailable(spdlog)
 # include_directories(${spdlog_SOURCE_DIR}/include)
 
 include(ExternalProject)
 message("start compile spdlog")
+
 set(SPDLOG_ROOT ${CMAKE_BINARY_DIR}/third_party/spdlog)
 set(SPDLOG_GIT_TAG  v1.4.1)  # 指定版本
 set(SPDLOG_GIT_URL      https://github.com/gabime/spdlog.git)  # 指定git仓库地址
@@ -58,5 +62,5 @@ set(SPDLOG_INCLUDE_DIR   ${SPDLOG_ROOT}/include)
 
 
 include_directories(${SPDLOG_INCLUDE_DIR})
-LINK_DIRECTORIES(${SPDLOG_LIB})
+link_directories(${SPDLOG_LIB})
 message("finish compile spdlog")
