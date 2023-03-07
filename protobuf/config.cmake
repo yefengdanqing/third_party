@@ -16,9 +16,6 @@ set(PROTOBUF_GIT_TAG  v3.21.3)  # 指定版本
 set(PROTOBUF_GIT_URL  https://github.com/protocolbuffers/protobuf.git) 
 
 
-# set(PROTOBUF_MAKE         cd ${PROTOBUF_ROOT}/src/PROTOBUF && make -j8)
-# set(PROTOBUF_INSTALL      cd ${PROTOBUF_ROOT}/src/PROTOBUF && make install)
-
 
 ExternalProject_Add(PROTOBUF
         PREFIX                  ${PROTOBUF_ROOT}
@@ -33,7 +30,6 @@ ExternalProject_Add(PROTOBUF
 
 
 ADD_LIBRARY(protobuf STATIC IMPORTED GLOBAL)
-message("zzzzzzzzzzzzz${PROTOBUF_LIB_DIR}/libprotobuf.so")
 SET_PROPERTY(TARGET protobuf PROPERTY IMPORTED_LOCATION ${PROTOBUF_LIB_DIR}/libprotobuf.so)
 #SET_PROPERTY(TARGET protobuf PROPERTY IMPORTED_LOCATION ${PROTOBUF_LIB_DIR}/libprotoc.a)
 add_dependencies(protobuf PROTOBUF)
