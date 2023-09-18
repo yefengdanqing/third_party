@@ -12,7 +12,7 @@ set(CASSANDRA_DRIVER_GIT_TAG  master)  # 指定版本
 set(CASSANDRA_DRIVER_GIT_URL https://github.com/scylladb/cpp-driver.git)  # 指定git仓库地址
 
 
-set(CASSANDRA_DRIVER_CONFIGURE    cd ${CASSANDRA_DRIVER_ROOT}/src/CASSANDRA_DRIVER && rm -rf build && mkdir build && cd build && CXXFLAGS=-fPIC cmake -DCASS_BUILD_INTEGRATION_TESTS=OFF .. -DCMAKE_INSTALL_PREFIX=${CASSANDRA_DRIVER_ROOT} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_LIBDIR=lib)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
+set(CASSANDRA_DRIVER_CONFIGURE    cd ${CASSANDRA_DRIVER_ROOT}/src/CASSANDRA_DRIVER && rm -rf build && mkdir build && cd build && CXXFLAGS=-fPIC cmake -DCASS_BUILD_INTEGRATION_TESTS=OFF .. -DCMAKE_INSTALL_PREFIX=${CASSANDRA_DRIVER_ROOT} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_LIBDIR=lib -DLIBUV_ROOT_DIR=${LIBUV_ROOT})  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
 set(CASSANDRA_DRIVER_MAKE         cd ${CASSANDRA_DRIVER_ROOT}/src/CASSANDRA_DRIVER/build && CC=gcc CXX=g++ CXXFLAGS=-fPIC make)  # 指定编译指令（需要覆盖默认指令，进入我们指定的CASSANDRA_DRIVER_ROOT目录下）
 set(CASSANDRA_DRIVER_INSTALL      cd ${CASSANDRA_DRIVER_ROOT}/src/CASSANDRA_DRIVER && cd build && make install)  # 指定安装指令（需要覆盖默认指令，进入我们指定的CASSANDRA_DRIVER_ROOT目录下,可以copy 出来
 
@@ -65,6 +65,7 @@ if(NOT EXISTS ${CASSANDRA_DRIVER_ROOT}/lib/libscylla-cpp-driver.so)
 			    -DBUILD_TESTING=OFF
 			    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 			    -DCMAKE_INSTALL_PREFIX=${CMAKE_PREFIX_PATH_STR}
+			    -DLIBUV_ROOT_DIR=${LIBUV_ROOT}
         )
 
         ADD_LIBRARY(scylla-cpp-driver SHARED IMPORTED GLOBAL)

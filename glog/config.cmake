@@ -57,6 +57,6 @@ link_directories(${GLOG_LIB_DIR})
 
 
 ADD_LIBRARY(glog STATIC IMPORTED GLOBAL)
-SET_PROPERTY(TARGET glog PROPERTY IMPORTED_LOCATION ${GLOG_LIB_DIR}/libglog.a)
+SET_PROPERTY(TARGET glog PROPERTY IMPORTED_LOCATION ${GLOG_LIB_DIR}/libglog.so)
 # add_library(glog gflags)
 add_dependencies(glog GLOG)
