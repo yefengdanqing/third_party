@@ -21,7 +21,7 @@ set(PROTOBUF_LIBRARIES "${PROTOBUF_LIB_DIR}/libprotobuf.a" CACHE PATH "Path to g
 include_directories(${PROTOBUF_INCLUDE_DIR})
 link_directories(${PROTOBUF_LIB_DIR})
 
-set(PROTOBUF_GIT_TAG  v3.19.6)  # 指定版本
+set(PROTOBUF_GIT_TAG  v3.21.3)  # 指定版本
 set(PROTOBUF_GIT_URL  https://github.com/protocolbuffers/protobuf.git) 
 set(PROTOBUF_VERSION "protobuf-3.5.1")
 
@@ -41,6 +41,7 @@ list(FIND CMAKE_PREFIX_PATH ${PROTOBUF_ROOT} _DEP_INDEX)
 if (_DEP_INDEX EQUAL -1)
     list(APPEND CMAKE_PREFIX_PATH ${PROTOBUF_ROOT})
 endif ()
+string(REPLACE ";" "|" TPROTO_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
 
 message("SOURCE_DIR SOURCE_DIR SOURCE_DIR:${SOURCE_DIR}")
 ExternalProject_Add(
@@ -54,7 +55,7 @@ ExternalProject_Add(
                         -Dprotobuf_BUILD_TESTS=OFF
                         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
                         -DCMAKE_INSTALL_PREFIX=${PROTOBUF_ROOT}
-                        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+                        -DCMAKE_PREFIX_PATH=${TPROTO_CMAKE_PREFIX_PATH}
                         -DCMAKE_INSTALL_LIBDIR=lib
                         -DBUILD_SHARED_LIBS=OFF
                         # ./cmake
