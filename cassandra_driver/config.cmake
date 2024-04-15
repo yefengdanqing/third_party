@@ -1,18 +1,18 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../libuv/config.cmake)
+#include(${CMAKE_CURRENT_LIST_DIR}/../libuv/config.cmake)
 
 
 include(ExternalProject)
 set(THIRD_PARTY_PREFIX ${CMAKE_BINARY_DIR}/third_party)
 set(CASSANDRA_DRIVER_INSTALL_DIR "${PROJECT_BINARY_DIR}/third_party/cassandra_driver")
 set(CASSANDRA_DRIVER_INCLUDE_DIR "${CASSANDRA_DRIVER_INSTALL_DIR}/include" CACHE PATH "cassandra_driver include directory." FORCE)
-set(CASSANDRA_DRIVER_LIBRARIES "${CASSANDRA_DRIVER_INSTALL_DIR}/lib/libcassandra_driver.a" CACHE FILEPATH "CASSANDRA_DRIVER_LIBRARIES" FORCE)
+set(CASSANDRA_DRIVER_LIBRARIES "${CASSANDRA_DRIVER_INSTALL_DIR}/lib/libscylla-cpp-driver.so" CACHE FILEPATH "CASSANDRA_DRIVER_LIBRARIES" FORCE)
 
 set(CASSANDRA_DRIVER_ROOT ${THIRD_PARTY_PREFIX}/cassandra_driver)
 set(CASSANDRA_DRIVER_GIT_TAG  master)  # 指定版本
 set(CASSANDRA_DRIVER_GIT_URL https://github.com/scylladb/cpp-driver.git)  # 指定git仓库地址
 
 
-set(CASSANDRA_DRIVER_CONFIGURE    cd ${CASSANDRA_DRIVER_ROOT}/src/CASSANDRA_DRIVER && rm -rf build && mkdir build && cd build && CXXFLAGS=-fPIC cmake -DCASS_BUILD_INTEGRATION_TESTS=OFF .. -DCMAKE_INSTALL_PREFIX=${CASSANDRA_DRIVER_ROOT} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_LIBDIR=lib)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
+set(CASSANDRA_DRIVER_CONFIGURE    cd ${CASSANDRA_DRIVER_ROOT}/src/CASSANDRA_DRIVER && rm -rf build && mkdir build && cd build && CXXFLAGS=-fPIC cmake -DCASS_BUILD_INTEGRATION_TESTS=ON .. -DCMAKE_INSTALL_PREFIX=${CASSANDRA_DRIVER_ROOT} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_LIBDIR=lib -DLIBUV_ROOT_DIR=${LIBUV_ROOT} -DCASS_BUILD_EXAMPLES=ON)  # 指定配置指令（注意此处修改了安装目录，否则默认情况下回安装到系统目录）
 set(CASSANDRA_DRIVER_MAKE         cd ${CASSANDRA_DRIVER_ROOT}/src/CASSANDRA_DRIVER/build && CC=gcc CXX=g++ CXXFLAGS=-fPIC make)  # 指定编译指令（需要覆盖默认指令，进入我们指定的CASSANDRA_DRIVER_ROOT目录下）
 set(CASSANDRA_DRIVER_INSTALL      cd ${CASSANDRA_DRIVER_ROOT}/src/CASSANDRA_DRIVER && cd build && make install)  # 指定安装指令（需要覆盖默认指令，进入我们指定的CASSANDRA_DRIVER_ROOT目录下,可以copy 出来
 
@@ -41,16 +41,22 @@ if(NOT DEFINED ENV{LIBUV_ROOT_DIR})
 endif()
 
 
-list(FIND CMAKE_PREFIX_PATH ${CASSANDRA_DRIVER_ROOT} INDEX)
+list(FIND CMAKE_PREFIX_PATH ${CASSANDRA_DRIVER_LIB_DIR} INDEX)
 if(INDEX EQUAL -1)
-    list(APPEND CMAKE_PREFIX_PATH ${CASSANDRA_DRIVER_ROOT})
+    list(APPEND CMAKE_PREFIX_PATH ${CASSANDRA_DRIVER_LIB_DIR})
 endif()
-string (REPLACE ";" "\\;" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
+
 message("CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH_STR}")
 
+find_package(scylla-cpp-driver QUIET)
+if (NOT scylla-cpp-driver_FOUND)
+    message("not scylla-cpp-driverxxxxxxxxxxxxxxxxxxx")
+else()
+    message("find scylla-cpp-driverxxxxxxxxxxxxxxxxxxx")
+endif()
 
 
-if(NOT EXISTS ${CASSANDRA_DRIVER_ROOT}/lib/libscylla-cpp-driver.so)
+if (NOT scylla-cpp-driver_FOUND)
         ExternalProject_Add(CASSANDRA_DRIVER
                 #DEPENDS LIBUV
                 PREFIX            ${CASSANDRA_DRIVER_ROOT}
@@ -61,17 +67,20 @@ if(NOT EXISTS ${CASSANDRA_DRIVER_ROOT}/lib/libscylla-cpp-driver.so)
                 INSTALL_COMMAND   ${CASSANDRA_DRIVER_INSTALL}
                 # LOG_CONFIGURE     1
                 # LOG_INSTALL       1
-                CMAKE_ARGS          -DBUILD_SHARED_LIBS=ON
-			    -DBUILD_TESTING=OFF
-			    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-			    -DCMAKE_INSTALL_PREFIX=${CMAKE_PREFIX_PATH_STR}
+                CMAKE_ARGS          "-DBUILD_SHARED_LIBS=ON;-DBUILD_TESTING=OFF;-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE};-DCMAKE_INSTALL_PREFIX=${CMAKE_PREFIX_PATH_STR};-DLIBUV_ROOT_DIR=${LIBUV_ROOT}"
         )
-
-        ADD_LIBRARY(scylla-cpp-driver SHARED IMPORTED GLOBAL)
-        SET_PROPERTY(TARGET scylla-cpp-driver PROPERTY IMPORTED_LOCATION ${CASSANDRA_DRIVER_LIB_DIR}/libscylla-cpp-driver.so)
-        #SET_PROPERTY(TARGET cassandra_driver PROPERTY IMPORTED_LOCATION ${CASSANDRA_DRIVER_LIB_DIR}/libcassandra_driver.a)
-        add_dependencies(scylla-cpp-driver CASSANDRA_DRIVER uv)
 endif()
+
+ADD_LIBRARY(scylla-cpp-driver SHARED IMPORTED GLOBAL)
+SET_PROPERTY(TARGET scylla-cpp-driver PROPERTY IMPORTED_LOCATION ${CASSANDRA_DRIVER_LIB_DIR}/libscylla-cpp-driver.so)
+add_dependencies(scylla-cpp-driver CASSANDRA_DRIVER libuv)
+
+set(LIB_BIBRARY
+    ${LIB_BIBRARY}
+    ${CASSANDRA_DRIVER_LIB_DIR}/libscylla-cpp-driver.so)
+set(LIB_DEPENDS
+        ${LIB_DEPENDS}
+        "scylla-cpp-driver")
 
 set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${CASSANDRA_DRIVER_ROOT}/lib/pkgconfig/")
 

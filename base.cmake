@@ -3,9 +3,7 @@
 # option(BUILD_DEPS "build and install deps" ON)
 # option(BUILD_GCC "build gcc" OFF)
 
-include(FetchContent)
-# set(FETCHCONTENT_BASE_DIR "${DEPS_INSTALL_DIR}")
-include(ExternalProject)
+
 
 find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 
@@ -26,7 +24,6 @@ find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 
 
 
-find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 
 
 
@@ -34,6 +31,32 @@ find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 function(thirdparty_in_fetchcontent)
     message("thirdparty_in_fetchcontent")
 endfunction(thirdparty_in_fetchcontent)
+
+#不要用master,除非人为升级
+#begin include
+include(${PROJECT_SOURCE_DIR}/third_party/protobuf/config.cmake)
+
+#include(${PROJECT_SOURCE_DIR}/third_party/boost/config.cmake)
+# include(${PROJECT_SOURCE_DIR}/third_party/fmt/config.cmake)
+# include(${PROJECT_SOURCE_DIR}/third_party/absl/config.cmake)
+
+include(${PROJECT_SOURCE_DIR}/third_party/spdlog/config.cmake)
+include(${PROJECT_SOURCE_DIR}/third_party/gflags/config.cmake)
+include(${PROJECT_SOURCE_DIR}/third_party/glog/config.cmake)
+include(${PROJECT_SOURCE_DIR}/third_party/googletest/config.cmake)
+include(${PROJECT_SOURCE_DIR}/third_party/leveldb/config.cmake)
+include(${PROJECT_SOURCE_DIR}/third_party/openssl/config.cmake)
+
+
+#include(${PROJECT_SOURCE_DIR}/third_party/libuv/config.cmake)
+#include(${PROJECT_SOURCE_DIR}/third_party/cassandra_driver/config.cmake)
+include(${PROJECT_SOURCE_DIR}/third_party/brpc/config.cmake)
+
+
+
+
+#end include
+
 
 
 
@@ -87,11 +110,10 @@ function(CUSTOM_PROTOBUF_GENERATE_CPP SRCS HDRS)
 endfunction()
 
 #协议相关的操作
-file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/protocol/thrift/cpp)
-file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/protocol/protobuf/cpp)
-set(protocol_thrift ${PROJECT_BINARY_DIR}/protocol/thrift/cpp)
 set(protocol_protobuf ${PROJECT_BINARY_DIR}/protocol/protobuf/cpp)
-include_directories(${PROJECT_BINARY_DIR}/protocol/thrift/cpp ${PROJECT_BINARY_DIR}/protocol/protobuf/cpp)
+file(MAKE_DIRECTORY ${protocol_protobuf})
+
+include_directories(${PROJECT_BINARY_DIR}/protocol/protobuf/cpp)
 
 
 

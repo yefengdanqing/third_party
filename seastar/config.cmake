@@ -1,5 +1,5 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../protobuf/config.cmake)
+#include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
+#include(${CMAKE_CURRENT_LIST_DIR}/../protobuf/config.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../boost/config.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../fmt/config.cmake)
 
@@ -38,6 +38,4 @@ ExternalProject_Add(SEASTAR
         BUILD_COMMAND     ${SEASTAR_MAKE}
         INSTALL_COMMAND   ${SEASTAR_INSTALL}
 )
-
-
 message("finish compile seastar")

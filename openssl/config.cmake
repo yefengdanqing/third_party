@@ -17,6 +17,8 @@ set(OPENSSL_GIT_URL https://github.com/openssl/openssl.git)  # 指定git仓库�
 set(OPENSSL_LIB_DIR       ${OPENSSL_ROOT}/lib64)
 # 指定头文件所在的目录
 set(OPENSSL_INCLUDE_DIR   ${OPENSSL_ROOT}/include)
+set(OPENSSL_LIBRARIES "${OPENSSL_LIB_DIR}/libssl.a"
+                        "${OPENSSL_LIB_DIR}/libcrypto.a" CACHE FILEPATH "SSL_LIBRARIES" FORCE)
 
 include_directories(${OPENSSL_INCLUDE_DIR})
 link_directories(${OPENSSL_LIB_DIR})
@@ -26,8 +28,15 @@ set(OPENSSL_CONFIGURE    cd ${OPENSSL_ROOT}/src/OPENSSL && ./Configure --prefix=
 
 set(OPENSSL_MAKE         cd ${OPENSSL_ROOT}/src/OPENSSL && make depend && make -j8)  # 指定编译指令（需要覆盖默认指令，进入我们指定的OPENSSL_ROOT目录下）
 set(OPENSSL_INSTALL      cd ${OPENSSL_ROOT}/src/OPENSSL && make install)  # 指定安装指令（需要覆盖默认指令，进入我们指定的OPENSSL_ROOT目录下,可以copy 出来
-if(NOT EXISTS ${OPENSSL_ROOT}/lib64/libsxxxsl.a) # 如果不存在，则需要编译,要先创建目标
-        message("skt: ${OPENSSL_ROOT}/lib64/libssl.a")
+ # 如果不存在，则需要编译,要先创建目标
+list(FIND CMAKE_PREFIX_PATH ${OPENSSL_ROOT} _DEP_INDEX)
+if (_DEP_INDEX EQUAL -1)
+    list(APPEND CMAKE_PREFIX_PATH ${OPENSSL_ROOT})
+endif ()
+
+find_package(OpenSSL QUIET)
+
+if(NOT OpenSSL_FOUND)
         ExternalProject_Add(OPENSSL
                 PREFIX            ${OPENSSL_ROOT}          
                 GIT_REPOSITORY    ${OPENSSL_GIT_URL}
@@ -42,7 +51,7 @@ if(NOT EXISTS ${OPENSSL_ROOT}/lib64/libsxxxsl.a) # 如果不存在，则需要�
                                 -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
                                 -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
                                 -DCMAKE_PREFIX_PATH=${OPENSSL_SOURCES_DIR}
-                                -DCMAKE_INSTALL_PREFIX=${OPENSSL_ROOT/skt}
+                                -DCMAKE_INSTALL_PREFIX=${OPENSSL_ROOT/}
                                 -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 		                -DBUILD_SHARED_LIBS=OFF
                                 -DBUILD_STATIC_LIBS=ON
@@ -51,16 +60,22 @@ if(NOT EXISTS ${OPENSSL_ROOT}/lib64/libsxxxsl.a) # 如果不存在，则需要�
                                 -DCMAKE_INSTALL_LIBDIR=lib
         )
 
+endif()
 
-
-        message("skt lib64: ${OPENSSL_LIB_DIR}")
+message("skt lib64: ${OPENSSL_LIB_DIR}")
         include_directories(${OPENSSL_INCLUDE_DIR})
         link_directories(${OPENSSL_LIB_DIR})
 
 
 
-        ADD_LIBRARY(openssl STATIC IMPORTED GLOBAL)
-        SET_PROPERTY(TARGET openssl PROPERTY IMPORTED_LOCATION ${OPENSSL_LIB_DIR}/libopenssl.so)
-        # add_library(openssl gflags)
-        add_dependencies(openssl OPENSSL)
-endif()
+add_library(openssl_openssl STATIC IMPORTED GLOBAL)
+set_property(TARGET openssl_openssl PROPERTY IMPORTED_LOCATION ${OPENSSL_LIB_DIR}/libssl.so)
+add_dependencies(openssl_openssl OPENSSL)
+set(LIB_BIBRARY
+    ${LIB_BIBRARY}
+    ${OPENSSL_LIBRARIES})
+set(LIB_DEPENDS
+        ${LIB_DEPENDS}
+        "openssl_openssl")
+# add_library(openssl gflags)
+

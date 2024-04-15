@@ -43,3 +43,10 @@ message("RAPIDJSON_LIBRARIES = ${RAPIDJSON_LIBRARIES}")
 add_library(rapidjson STATIC IMPORTED GLOBAL)
 set_property(TARGET rapidjson PROPERTY IMPORTED_LOCATION ${RAPIDJSON_LIBRARIES})
 add_dependencies(rapidjson rapidjson_rapidjson)
+
+set(LIB_BIBRARY
+    ${LIB_BIBRARY}
+    ${RAPIDJSON_LIBRARIES})
+set(LIB_DEPENDS
+        ${BRPC_LIBRARIES}
+        "rapidjson")

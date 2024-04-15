@@ -1,5 +1,3 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
-
 set(THIRD_PARTY_PREFIX ${CMAKE_BINARY_DIR}/third_party)
 set(BOOST_ROOT ${THIRD_PARTY_PREFIX}/boost)
 set(BOOST_INCLUDE_LIBRARIES thread filesystem system graph)
@@ -17,3 +15,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(boost)
 include_directories(${boost_SOURCE_DIR}/include)
+# set(LIB_BIBRARY
+#     ${LIB_BIBRARY}
+#     "Boost::thread Boost::graph")
+# set(LIB_DEPENDS
+#          "${LIB_DEPENDS} Boost::thread Boost::graph")

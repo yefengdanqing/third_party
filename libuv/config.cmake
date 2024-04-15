@@ -7,6 +7,7 @@ set(LIBUV_INCLUDE_DIR "${LIBUV_INSTALL_DIR}/include" CACHE PATH "libuv include d
 set(LIBUV_LIBRARIES "${LIBUV_INSTALL_DIR}/lib/Libuv.a" CACHE FILEPATH "LIBUV_LIBRARIES" FORCE)
 
 set(LIBUV_ROOT ${THIRD_PARTY_PREFIX}/libuv)
+set(LIBUV_ROOT_DIR "${THIRD_PARTY_PREFIX}" CACHE STRING "libuv root directory" FORCE)
 set(LIBUV_GIT_TAG v1.x)  # 指定版本
 set(LIBUV_GIT_URL https://github.com/libuv/libuv.git)  # 指定git仓库地址
 
@@ -21,35 +22,26 @@ set(LIBUV_LIB_DIR       ${LIBUV_ROOT}/lib)
 # 指定头文件所在的目录
 set(LIBUV_INCLUDE_DIR   ${LIBUV_ROOT}/include)
 
-message("add depends dirs: [${LIBUV_LIB_DIR}][${LIBUV_INCLUDE_DIR}]")
+set(LIBUV_LIBRARY ${LIBUV_LIB_DIR}/libuv.so)
+
 link_directories(${LIBUV_LIB_DIR})
-set(LIBUV_LIBRARY ${LIBUV_LIB_DIR})
 include_directories(${LIBUV_INCLUDE_DIR})
 
 list(FIND CMAKE_PREFIX_PATH ${LIBUV_ROOT} INDEX)
 if(INDEX EQUAL -1)
     list(APPEND CMAKE_PREFIX_PATH ${LIBUV_ROOT})
 endif()
-
 list(APPEND CMAKE_PREFIX_PATH "\;${LIBUV_LIB_DIR}/cmake/libuv")
 
 # for FindLibUV in cassandra-cpp-driver
 set(ENV{LIBUV_ROOT_DIR} "$ENV{LIBUV_ROOT_DIR}:${LIBUV_LIB_DIR}")
-message("aaaaaaaaaaaaaaaaaaaaaaaaaaaa" [${LIBUV_ROOT_DIR}])
 # for pkg config path
 set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${LIBUV_ROOT}/lib/pkgconfig/")
 find_package(PkgConfig REQUIRED)
-
 #pkg_search_module(LIBUV REQUIRED libuv)
+find_package(uv QUIET)
 
-if(NOT LIBUV_ROOT_DIR)
-        message("not find message[${LIBUV_ROOT_DIR}]" )
-else()
-        message("find message[${LIBUV_ROOT_DIR}]")
-endif()
-
-
-if(NOT EXISTS ${LIBUV_ROOT}/lib/LIBUV.so)
+if (NOT uv_FOUND) 
         ExternalProject_Add(LIBUV
                 #DEPENDS LIBUV
                 PREFIX            ${LIBUV_ROOT}
@@ -67,17 +59,18 @@ if(NOT EXISTS ${LIBUV_ROOT}/lib/LIBUV.so)
                             -DCMAKE_INSTALL_LIBDIR=lib
                             -DCMAKE_PREFIX_PATH=${}
         )
-
-        ADD_LIBRARY(uv SHARED IMPORTED GLOBAL)
-        SET_PROPERTY(TARGET uv PROPERTY IMPORTED_LOCATION ${LIBUV_LIB_DIR}/libuv.so)
-        #SET_PROPERTY(TARGET LIBUV PROPERTY IMPORTED_LOCATION ${LIBUV_LIB_DIR}/libLIBUV.a)
-        add_dependencies(uv LIBUV)
 endif()
+ADD_LIBRARY(libuv SHARED IMPORTED GLOBAL)
+SET_PROPERTY(TARGET libuv PROPERTY IMPORTED_LOCATION ${LIBUV_LIB_DIR}/libuv.so)
+#SET_PROPERTY(TARGET LIBUV PROPERTY IMPORTED_LOCATION ${LIBUV_LIB_DIR}/libLIBUV.a)
+add_dependencies(libuv LIBUV)
 
-
-
-message("skt lib dir1111 [${CMAKE_INSTALL_LIBDIR}][${CMAKE_INSTALL_PREFIX}][${CMAKE_PREFIX_PATH}]")
-
+set(LIB_BIBRARY
+    ${LIB_BIBRARY}
+    ${BRPC_LIBRARIES})
+set(LIB_DEPENDS
+        ${BRPC_LIBRARIES}
+        "libuv")
 
 message("cmake_module_path: " ${CMAKE_MODULE_PATH})
 list(APPEND CMAKE_MODULE_PATH "\;${LIBUV_LIB_DIR}/cmake/libuv")

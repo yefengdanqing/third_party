@@ -144,3 +144,11 @@ unset(_DEP_PREFIX)
 unset(_DEP_BIN_DIR)
 unset(_DEP_LIB_DIR)
 unset(_DEP_INCLUDE_DIR)
+
+
+# set(LIB_BIBRARY
+#     ${LIB_BIBRARY}
+#     ${BRPC_LIBRARIES})
+# set(LIB_DEPENDS
+#         ${BRPC_LIBRARIES}
+#         "")

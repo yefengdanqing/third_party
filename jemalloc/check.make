@@ -116,3 +116,9 @@ unset(_DEP_UNAME)
 unset(_DEP_VER)
 unset(_DEP_URL)
 unset(_DEP_PREFIX)
+# set(LIB_BIBRARY
+#     ${LIB_BIBRARY}
+#     ${BRPC_LIBRARIES})
+# set(LIB_DEPENDS
+#         ${BRPC_LIBRARIES}
+#         "")
